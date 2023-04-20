@@ -5,3 +5,4 @@ django-crispy-forms
 django_extensions
 django_heroku   
 crispy-bootstrap4
+django-admin-interface
