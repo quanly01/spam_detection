@@ -21,14 +21,14 @@
         <!-- Fontawesome  -->
         <script src="https://kit.fontawesome.com/bca7a1a6ae.js" crossorigin="anonymous"></script>
 
-        <title> Dinosaur's Pizza - {% block title %} {% endblock %} </title>
+        <title> Dinosaur's Detector - {% block title %} {% endblock %} </title>
     </head>
     <body>
         <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
             <div class="container-fluid">                
                 <a class="navbar-brand" href="/">
                     <img src="/static/orders/pickle-cute.gif" alt="" height="70px">                    
-                    Dinosaur's pizza <br>
+                    Dinosaur's Detector <br>
                 </a>
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#myNavbar">
                     <span class="navbar-toggler-icon"></span>                                         
@@ -36,17 +36,11 @@
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item"><a href="{% url 'home' %}" class="nav-link"> Home </a></li>
-                        <li class="nav-item"><a href="{% url 'index' %}" class="nav-link"> Menu </a></li>
+                        <li class="nav-item"><a href="{% url 'index' %}" class="nav-link"> Spam Detection </a></li>
+                        <li class="nav-item"><a href="{% url 'analysis' %}" class="nav-link"> Analysis </a></li>
                     </ul>
                     {% if user.is_authenticated %}
-                    <ul class="navbar-nav mr-auto">
-                        {% if user.is_superuser or user.is_staff %} 
-                        <li class="nav-item"><a href="{% url 'allorders' %}" class="nav-link"> All Orders </a></li>
-                        {% endif %}                       
-                    </ul>
                     <ul class="navbar-nav ml-auto">                                            
-                        <a class="nav-link active" href="{% url 'cart' %}"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart </a>
-                        <li class="nav-item"><a href="{% url 'myorders' %}" class="nav-link"> My Orders </a></li>
                         <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout </a></li>
                     </ul>
                     {% else %}

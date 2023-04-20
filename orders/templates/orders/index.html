@@ -1,0 +1,34 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block content %}
+
+{% if ans %}
+<script>
+    alert("{{ans}}");
+</script>
+{% endif %}
+<br>
+<h1 class="text-white text-center">  WELCOME TO DINOSAUR SPAM EMAIL DETECTOR  </h1>
+<hr width="1120" style="height:2px;border-width:0;color:gray;background-color:white ">
+<br>
+<div class="container">
+<form class="form-horizontal" action="predict" method="post">
+    {% csrf_token %}
+<div class="form-group">
+    <label class="control-label col-sm-2" for="msg" style="color:#CDCDCD;text-shadow: 2px 2px black;">Message:</label>
+    <div class="col-sm-10">
+        <textarea name="msg" rows="10" cols="10" class="form-control" id="msg" placeholder="Enter your Message" required></textarea>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10"  >
+        <input type="submit" class="btn btn-default" style="color:#CDCDCD;text-shadow: 2px 2px black;width:800px;">
+    </div>
+</div>
+</form>
+</div>
+{% endblock %}

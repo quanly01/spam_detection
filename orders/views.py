@@ -4,198 +4,78 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
 import decimal
+import pandas as pd 
+import numpy as np
+import pickle
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+import matplotlib.pyplot as plt
+import seaborn as sns
+from .models import Orders
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-from .models import Pizza, Pasta, Sub, SubExtras, Salads, DinnerPlatters, Catagories, Orders
 
+def mainpage(request):
+    return render(request, 'orders/home.html')
 
 def home(request):
-    return render(request, "orders/home.html")
+    return render(request, 'orders/introduction.html')
+
+def index(request):
+    return render(request, "orders/index.html")
+
+def analysis(request):
+    return render(request, "orders/analysis.html")
 
 @login_required
 def love(request):
     return render(request, "orders/love.html")
 
-
-def index(request):
-    context = {
-        "pizzas" : Pizza.objects.all(),
-        "toppings" : Catagories.objects.all(),
-        "subs" : Sub.objects.all(),
-        "subextras" : SubExtras.objects.all(),
-        "pastas" : Pasta.objects.all(),
-        "dinnerplatters" : DinnerPlatters.objects.all(),
-        "salads" : Salads.objects.all(),
-    }
-    return render(request, "orders/menu.html", context)
+@login_required
+def sad(request):
+    return render(request, "orders/sad.html")
 
 @login_required
-def additems(request):
+def predict(request):
+    df= pd.read_csv("orders/spam.csv", encoding="latin-1")
+    df.drop(['Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4'], axis=1, inplace=True)
+	# Features and Labels
+    df['label'] = df['v1'].map({'ham': 0, 'spam': 1})
+    df['message']=df['v2']
+    df.drop(['v1','v2'],axis=1,inplace=True)
+    X = df['message']
+    y = df['label']
+    #Extract features
+    cv = TfidfVectorizer(max_features=3000)
+    X = cv.fit_transform(X) # Fit the Data
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    #Naive Bayes Classifier
+    from sklearn.naive_bayes import MultinomialNB
+
+    clf = MultinomialNB()
+    clf.fit(X_train,y_train)
+    clf.score(X_test,y_test)
+
     if request.method == 'GET':
         return HttpResponseRedirect(reverse('index'))
 
-    dish = request.POST["dishtype"] 
 
-    if dish in ["regularpizza", "dinosaurpizza"]:
-        name = request.POST["dishname"]
-        size = request.POST["pizza_size"]
-        if size == "Small":
-            price = request.POST["price_small"]
+    if request.method == 'POST':
+        message = request.POST['msg']
+        # order = Orders(username = request.user.username, send_message = message)
+        # order.save()
+        data = [message]
+        vect = cv.transform(data).toarray()
+        prediction = clf.predict(vect)
+        if prediction==0:
+            order = Orders(username = request.user.username, send_message = message, status = 'Ham')
+            order.save()
+            return render(request, "orders/love.html")
         else:
-            price = request.POST["price_large"]            
-        toppings = request.POST.getlist('pizza_topping')
-        if(len(toppings) != int(name[0])):
-            messages.warning(request, 'Item was not added to the cart! Please ensure that you are adding a correct number of catagorie(s).')
-            return HttpResponseRedirect(reverse('index'))
-
-        remarks = 'Size: ' + size + ' | Catagories: '
-        for topping in toppings:
-            remarks = remarks + topping + ', '
-
-        remarks = remarks[slice(len(remarks)-2)]
-        if dish == 'regularpizza':
-            dishtype = 'Regular Pizza'
-        else:
-            dishtype = 'Dinosaur Pizza'
-
-        order = Orders(username = request.user.username, dishtype = dishtype, dishname = name, price = price, remarks = remarks, status = 'Initiated')
-        order.save()
-
-        messages.success(request, 'Item was successfully added to the cart! Go to the cart and checkout the order')
-        return HttpResponseRedirect(reverse('index'))
-
-
-    elif dish == "sub":
-        name = request.POST["dishname"]
-        size = request.POST["sub_size"]
-        if size == "Small":
-            price = request.POST["price_small"]
-        else:
-            price = request.POST["price_large"]
-        extras = request.POST.getlist('sub_extras')
-
-        if len(extras) > 0:
-            remarks = 'Size: ' + size + ' | Extras: '
-        else:
-            remarks = 'Size: ' + size + '  '
-        
-        extra_price = 0
-        for extra in extras:
-            extra_price += SubExtras.objects.filter(name=extra).first().price
-            remarks = remarks + extra + ', '
-
-        remarks = remarks[slice(len(remarks)-2)]
-        price = decimal.Decimal(price)
-        price += extra_price
-        order = Orders(username = request.user.username, dishtype = 'Sub', dishname = name, price = price, remarks = remarks, status = 'Initiated')
-        order.save()
-
-        messages.success(request, 'Item was successfully added to the cart! Go to the cart and checkout the order')
-        return HttpResponseRedirect(reverse('index'))
-  
-
-    elif dish == "pasta":
-        name = request.POST["dishname"]
-        price = request.POST["price"]
-
-        order = Orders(username = request.user.username, dishtype = 'Pasta', dishname = name, price = price, remarks = '', status = 'Initiated')
-        order.save()
-        
-        messages.success(request, 'Item was successfully added to the cart! Go to the cart and checkout the order')
-        return HttpResponseRedirect(reverse('index'))
-
-
-    elif dish == "platter":
-        name = request.POST["dishname"]
-        size = request.POST["platter_size"]
-        if size == "Small":
-            price = request.POST["price_small"]
-        else:
-            price = request.POST["price_large"]
-
-        remarks = 'Size: ' + size
-        order = Orders(username = request.user.username, dishtype = 'Dinner Platter', dishname = name, price = price, remarks = remarks, status = 'Initiated')
-        order.save()
-        
-        messages.success(request, 'Item was successfully added to the cart! Go to the cart and checkout the order')
-        return HttpResponseRedirect(reverse('index'))
-
-
-    elif dish == "salad":
-        name = request.POST["dishname"]
-        price = request.POST["price"]
-
-        order = Orders(username = request.user.username, dishtype = 'Salad', dishname = name, price = price, remarks = '', status = 'Initiated')
-        order.save()
-        
-        messages.success(request, 'Item was successfully added to the cart! Go to the cart and checkout the order')
-        return HttpResponseRedirect(reverse('index'))
-
-@login_required
-def cart(request):
-    orders = Orders.objects.filter(username = request.user.username).filter(status = 'Initiated')
-    total_price = 0
-    for order in orders:
-        total_price += order.price
-
-    context = {
-        "orders" : orders,
-        "total_price" : total_price,
-    }
-    return render(request, "orders/cart.html", context)
-
-@login_required
-def checkout(request):
-    if request.method == 'GET':
-        return HttpResponseRedirect('/')
-
-    orders = Orders.objects.filter(username = request.user.username).filter(status = 'Initiated')
-
-    for order in orders:
-        order.status = 'Paid'
-        order.save()
-
-    messages.success(request, 'Your order has been placed successfully!')
-    return HttpResponseRedirect(reverse('love'))
-
-@login_required
-def allorders(request):
-    if request.user.is_superuser or request.user.is_staff:
-        orders = Orders.objects.all().order_by('id').reverse()
-        context = {
-            "orders" : orders
-        }
-        return render(request, "orders/allorders.html", context)
-    else:
-        return HttpResponseRedirect(reverse('index'))
-
-@login_required
-def complete(request):
-    if request.method == 'GET':
-        return HttpResponseRedirect('/')
+            order = Orders(username = request.user.username, send_message = message, status = 'Spam')
+            order.save()
+            return render(request, "orders/sad.html")
     
-    order_id = request.POST["order"]
-    order = Orders.objects.get(pk=order_id)
-    order.status = 'Delivered'
-    order.save()
-    
-    return HttpResponseRedirect(reverse('allorders'))
 
-@login_required
-def delete(request):
-    order_id = request.POST["order"]
-    order = Orders.objects.get(pk=order_id)
-    order.delete()
-
-    return HttpResponseRedirect(reverse('cart'))
-
-@login_required
-def myorders(request):
-    ongoing_orders = Orders.objects.filter(username = request.user.username).filter(status = 'Paid').order_by('id').reverse()
-    previous_orders = Orders.objects.filter(username = request.user.username).filter(status = 'Delivered').order_by('id').reverse()
-
-    context = {
-        "ongoing_orders" : ongoing_orders,
-        "previous_orders" : previous_orders,
-    }
-    return render(request, "orders/myorders.html", context)
 

@@ -1,0 +1,58 @@
+{% extends "orders/base.html" %}
+
+{% block title %}
+    Menu
+{% endblock %}
+
+{% block content %}
+    <div style="overflow: auto;" class="container mt-3">
+        <h1 class="text-white text-center"> <u> Exploratory Data Analysis</u></h1><br><br>
+    
+    <div>
+        <h1 class="text-white"> <u>1. SMS Spam Collection Dataset</u></h1><br>
+        <h5 class="text-white">
+             o Bộ dữ liệu SMS Spam Collection là bộ dữ liệu được sử dụng rộng rãi trong lĩnh vực xử lý ngôn ngữ tự nhiên và phân loại thư rác. Bộ dữ liệu này được thu thập tại Anh và chứa hơn 5574 tin nhắn SMS bằng tiếng Anh, trong đó có 4827 tin nhắn thường (ham) và 747 tin nhắn rác (spam).
+            <br><br>o	Bộ dữ liệu gồm các tệp văn bản, chứa thông tin về một tin nhắn, bao gồm cả nội dung của tin nhắn, loại tin nhắn (thông thường hoặc thư rác) và một số thông tin khác như thời gian gửi và số điện thoại của người gửi.
+            <br><br>o	Được sử dụng để huấn luyện các mô hình phân loại tin nhắn là thư rác hoặc tin nhắn thường.
+            <br><br>o	Bộ dữ liệu SMS Spam Collection chỉ chứa các tin nhắn tiếng Anh và không phải là một bộ dữ liệu đại diện cho mọi loại tin nhắn thư rác. Do đó khi sử dụng bộ dữ liệu này, cần xem xét kỹ càng để đảm bảo tính khả dụng của nó đối với ứng dụng cụ thể.
+            </h5>
+    </div>    
+    <div>    
+    <h1 class="text-white"> <u>2. Dataset Statistics</u></h1><br>
+    <center><img alt="Card image cap" class="card-img" src="/static/orders/statistics.png"></center>
+    </div><br>
+    <div>
+        <h1 class="text-white"> <u>3. SMS Preferences</u></h1><br>
+        <center><img alt="Card image cap" src="/static/orders/output.png" width="600px" height="600px" ></center>
+        </div><br>
+        <div>
+            <h1 class="text-white"> <u>4. Ham SMS WordCloud</u></h1><br>
+            <center><img alt="Card image cap" " src="/static/orders/ham.png" width="700px" height="600px"></center>
+            </div><br>
+            <div>
+                <h1 class="text-white"> <u>5. Spam SMS WordCloud</u></h1><br>
+                <center><img alt="Card image cap" src="/static/orders/spam.png"  width="700px" height="600px"></center>
+                </div><br>
+                <div>
+                    <h1 class="text-white"> <u>6. Ham SMS Counter</u></h1><br>
+                    <center><img alt="Card image cap"  src="/static/orders/hamcounter.png"   width="700px" height="600px"></center>
+                    </div><br>
+                    <div>
+                        <h1 class="text-white"> <u>7. Spam SMS Counter</u></h1><br>
+                        <center><img alt="Card image cap" src="/static/orders/spamcounter.png"   width="700px" height="600px"></center>
+                        </div><br>
+                        <div>
+                            <h1 class="text-white"> <u>8. Characters Chart</u></h1><br>
+                            <center><img alt="Card image cap"  src="/static/orders/character.png"  width="700px" height="600px" ></center>
+                            </div><br>
+                            <div>
+                                <h1 class="text-white"> <u>9. Words Chart</u></h1><br>
+                                <center><img alt="Card image cap"  src="/static/orders/word.png"  width="700px" height="600px"></center>
+                                </div><br>
+                                <div>
+                                    <h1 class="text-white"> <u>10. Example</u></h1><br>
+                                    <center><img alt="Card image cap" class="card-img" src="/static/orders/text.png" ></center>
+                                    </div><br>
+</div>
+
+{% endblock %}
